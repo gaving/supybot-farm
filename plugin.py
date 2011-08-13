@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2006-2007, Gavin Gilmour
+# Copyright (c) 2006-2011, Gavin Gilmour
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,9 @@ from SOAPpy import WSDL
 from optparse import OptionParser
 from xml.dom import minidom
 from urllib2 import Request, urlopen
+from BeautifulSoup import BeautifulSoup
 
-GROUPHUG_URL = 'http://beta.grouphug.us/'
+GROUPHUG_URL = 'http://grouphug.us/'
 HUG_PATTERN = r'<div class="content">(.*?)<\/div>'
 LYRICWIKI_WDSL = "http://lyricwiki.org/server.php?wsdl"
 FILE_PATTERN = r"""File\s*:\s*<a href="(.*src/\d.+\.jpg)" target="_blank">\d.+\.jpg.+?</a>"""
@@ -61,7 +62,7 @@ BOARD_TYPES = {
     "hc" : "cgi"
 }
 
-class Farm(plugins.ChannelIdDatabasePlugin, callbacks.Plugin):
+class Farm(callbacks.Plugin):
     """Main turnipfarm function class"""
 
     class Stripper(sgmllib.SGMLParser):
@@ -100,7 +101,6 @@ class Farm(plugins.ChannelIdDatabasePlugin, callbacks.Plugin):
 
 
     def doJoin(self, irc, msg):
-        self.log.debug(msg)
         if ircutils.strEqual(irc.nick, msg.nick):
             return # It's us.
         if msg.nick in self.splitters:
@@ -235,6 +235,27 @@ class Farm(plugins.ChannelIdDatabasePlugin, callbacks.Plugin):
 
     fourchan = wrap(fourchan, [optional('something')])
 
+    def image(self, irc, msg, args, keyword):
+        """<keyword>
+        Replies with an image from Google Images.
+        """
+        try:
+            url = """http://images.google.com/search?q=%s&hl=en&gbv=1&tbm=isch&ei=xs85TsmUN47OsgaE09nyDw&sa=N&safe=off"""
+            url = url % (keyword.replace(' ', '+'))
+            data = utils.web.getUrl(url)
+            links = BeautifulSoup(data).findAll('a', href=True)
+
+            matches = []
+            for link in links:
+                regex = re.findall('imgurl=(.+)(\.jpg+|\.png+|\.gif)', str(link))
+                if regex != []:
+                    matches.append(regex[0][0]+regex[0][1])
+
+            irc.reply(random.choice(matches))
+        except:
+            self._reply(irc, "error")
+
+    image = wrap(image, ['text'])
 
 Class = Farm
 

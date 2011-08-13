@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2006-2007, Gavin Gilmour
+# Copyright (c) 2006-2011, Gavin Gilmour
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ Essential turnipfarm functions
 import supybot
 import supybot.world as world
 
-__version__ = "0.01"
+__version__ = "0.02"
 __author__ = supybot.Author('Gavin Gilmour', 'vesech', 'gavin@brokentrain.net')
 __contributors__ = {}
 
