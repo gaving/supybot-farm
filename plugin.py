@@ -100,18 +100,6 @@ class Farm(callbacks.Plugin):
         irc.reply(msg.lower())
 
 
-    def doJoin(self, irc, msg):
-        if ircutils.strEqual(irc.nick, msg.nick):
-            return # It's us.
-        if msg.nick in self.splitters:
-            self.log.debug('Not quoting %s, recent split.', msg.nick)
-            return # Recently split.
-        channel = msg.args[0]
-        if self.registryValue('quoteOnJoin', channel):
-            quote = self.db.random(channel)
-            if quote:
-                irc.reply(quote.text)
-
     def figlet(self, irc, msg, args, text):
         """<text>
 
@@ -242,7 +230,7 @@ class Farm(callbacks.Plugin):
         try:
             url = """http://images.google.com/search?q=%s&hl=en&gbv=1&tbm=isch&ei=xs85TsmUN47OsgaE09nyDw&sa=N&safe=off"""
             url = url % (keyword.replace(' ', '+'))
-            data = utils.web.getUrl(url)
+            data = utils.web.getUrl(url, None, headers={'User-Agent' : "Google Chrome"})
             links = BeautifulSoup(data).findAll('a', href=True)
 
             matches = []
