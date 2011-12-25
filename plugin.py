@@ -230,7 +230,7 @@ class Farm(callbacks.Plugin):
         try:
             url = """http://images.google.com/search?q=%s&hl=en&gbv=1&tbm=isch&ei=xs85TsmUN47OsgaE09nyDw&sa=N&safe=off"""
             url = url % (keyword.replace(' ', '+'))
-            data = utils.web.getUrl(url, None, headers={'User-Agent' : "Google Chrome"})
+            data = utils.web.getUrl(url, None, headers={'User-Agent' : "Mozilla/1.22 (compatible; MSIE 2.0; Windows 3.1)"})
             links = BeautifulSoup(data).findAll('a', href=True)
 
             matches = []
